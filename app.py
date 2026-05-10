@@ -24,14 +24,18 @@ st.set_page_config(
     page_title="RocketVision",
     page_icon="🚀",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
 # ── Custom CSS ───────────────────────────────────────────────
 st.markdown("""
 <style>
     .main { background-color: #0e1117; }
-    .block-container { padding-top: 1.5rem; }
+    .block-container { padding-top: 0.5rem !important; padding-left: 1rem !important; padding-right: 1rem !important; max-width: 100% !important; }
+    header[data-testid="stHeader"] { height: 0rem; }
+    #MainMenu { visibility: hidden; }
+    footer { visibility: hidden; }
+    [data-testid="collapsedControl"] { display: block; }
     .metric-card {
         background: linear-gradient(135deg, #1e2130, #252a3d);
         border: 1px solid #2e3554;
@@ -156,10 +160,10 @@ if selected_countries:
 
 # ── Tabs ─────────────────────────────────────────────────────
 tab1, tab2, tab3, tab4 = st.tabs([
-    "🏠  Dashboard",
-    "📊  Charts & Analysis",
-    "📈  Probability & Stats",
-    "🎯  Mission Predictor"
+    "🏠 Dashboard",
+    "📊 Charts",
+    "📈 Probability & Stats",
+    "🎯 Predictor"
 ])
 
 # ============================================================
