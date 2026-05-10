@@ -7,9 +7,9 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import binom
 from sklearn.linear_model import LogisticRegression
@@ -166,86 +166,75 @@ tab1, tab2, tab3, tab4 = st.tabs([
 # TAB 1 — DASHBOARD
 # ============================================================
 with tab1:
-    st.markdown("# 🚀 RocketVision Dashboard")
-    st.markdown("*Analyzing 65 years of global space mission data*")
+    st.markdown("## 🚀 RocketVision — Space Mission Launch Success Predictor")
 
-    # KPI cards
-    total   = len(filtered)
-    success = filtered['success'].sum()
-    fail    = total - success
-    rate    = success / total * 100 if total > 0 else 0
+    total           = len(filtered)
+    success         = int(filtered['success'].sum())
+    fail            = total - success
+    rate            = success / total * 100 if total > 0 else 0
     countries_count = filtered['country'].nunique()
+    top_company     = filtered['company'].value_counts().idxmax()
 
-    c1, c2, c3, c4, c5 = st.columns(5)
-    with c1:
-        st.markdown(f"""<div class="metric-card">
-            <div class="metric-label">Total Launches</div>
-            <div class="metric-value">{total:,}</div>
-        </div>""", unsafe_allow_html=True)
-    with c2:
-        st.markdown(f"""<div class="metric-card">
-            <div class="metric-label">Successes</div>
-            <div class="metric-value" style="color:#64ffda">{success:,}</div>
-        </div>""", unsafe_allow_html=True)
-    with c3:
-        st.markdown(f"""<div class="metric-card">
-            <div class="metric-label">Failures</div>
-            <div class="metric-value" style="color:#ff6b6b">{fail:,}</div>
-        </div>""", unsafe_allow_html=True)
-    with c4:
-        st.markdown(f"""<div class="metric-card">
-            <div class="metric-label">Success Rate</div>
-            <div class="metric-value" style="color:#ffd700">{rate:.1f}%</div>
-        </div>""", unsafe_allow_html=True)
-    with c5:
-        st.markdown(f"""<div class="metric-card">
-            <div class="metric-label">Countries</div>
-            <div class="metric-value">{countries_count}</div>
-        </div>""", unsafe_allow_html=True)
+    c1, c2, c3, c4, c5, c6 = st.columns(6)
+    c1.metric("Total Launches",  f"{total:,}")
+    c2.metric("Successes",       f"{success:,}")
+    c3.metric("Failures",        f"{fail:,}")
+    c4.metric("Success Rate",    f"{rate:.1f}%")
+    c5.metric("Countries",       f"{countries_count}")
+    c6.metric("Top Company",     top_company)
 
     st.markdown("---")
 
-    # Overview charts side by side
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns([2, 1.4, 1.6])
 
     with col1:
-        st.markdown('<div class="section-header">Launches per Year</div>', unsafe_allow_html=True)
-        fig, ax = plt.subplots(figsize=(8, 3.5), facecolor='#0e1117')
+        st.markdown("**Launches per Year**")
+        fig, ax = plt.subplots(figsize=(6, 2.6), facecolor='#0e1117')
         ax.set_facecolor('#1e2130')
         yearly = filtered.groupby('year').size()
         ax.fill_between(yearly.index, yearly.values, alpha=0.3, color='#64ffda')
-        ax.plot(yearly.index, yearly.values, color='#64ffda', linewidth=2)
-        ax.set_xlabel('Year', color='#8892b0'); ax.set_ylabel('Launches', color='#8892b0')
-        ax.tick_params(colors='#8892b0'); ax.spines[:].set_color('#2e3554')
-        plt.tight_layout(); st.pyplot(fig); plt.close()
+        ax.plot(yearly.index, yearly.values, color='#64ffda', linewidth=1.8)
+        ax.set_xlabel('Year', color='#8892b0', fontsize=9)
+        ax.set_ylabel('Launches', color='#8892b0', fontsize=9)
+        ax.tick_params(colors='#8892b0', labelsize=8)
+        ax.spines[:].set_color('#2e3554')
+        plt.tight_layout(pad=0.5)
+        st.pyplot(fig, use_container_width=True)
+        plt.close()
 
     with col2:
-        st.markdown('<div class="section-header">Mission Status Breakdown</div>', unsafe_allow_html=True)
-        fig, ax = plt.subplots(figsize=(8, 3.5), facecolor='#0e1117')
+        st.markdown("**Mission Status**")
+        fig, ax = plt.subplots(figsize=(3.5, 2.6), facecolor='#0e1117')
         ax.set_facecolor('#1e2130')
         status_counts = filtered['mission_status'].value_counts()
-        colors = ['#64ffda','#ff6b6b','#ffd700','#a78bfa']
+        colors_pie = ['#64ffda','#ff6b6b','#ffd700','#a78bfa']
         wedges, texts, autos = ax.pie(
-            status_counts, labels=status_counts.index,
-            autopct='%1.1f%%', colors=colors[:len(status_counts)],
-            startangle=140, wedgeprops={'edgecolor':'#0e1117','linewidth':2},
-            textprops={'color':'#ccd6f6', 'fontsize':10}
+            status_counts,
+            labels=status_counts.index,
+            autopct='%1.0f%%',
+            colors=colors_pie[:len(status_counts)],
+            startangle=140,
+            wedgeprops={'edgecolor':'#0e1117','linewidth':1.5},
+            textprops={'color':'#ccd6f6','fontsize':7}
         )
-        for a in autos: a.set_color('#0e1117'); a.set_fontweight('bold')
-        plt.tight_layout(); st.pyplot(fig); plt.close()
+        for a in autos:
+            a.set_color('#0e1117'); a.set_fontsize(7); a.set_fontweight('bold')
+        plt.tight_layout(pad=0.3)
+        st.pyplot(fig, use_container_width=True)
+        plt.close()
 
-    # Top companies table
-    st.markdown('<div class="section-header">Top Companies by Launch Count</div>', unsafe_allow_html=True)
-    top_co = (
-        filtered.groupby('company')
-        .agg(launches=('success','count'), successes=('success','sum'))
-        .assign(success_rate=lambda x: (x['successes']/x['launches']*100).round(1))
-        .sort_values('launches', ascending=False)
-        .head(10)
-        .reset_index()
-    )
-    top_co.columns = ['Company','Total Launches','Successes','Success Rate (%)']
-    st.dataframe(top_co, use_container_width=True, hide_index=True)
+    with col3:
+        st.markdown("**Top 8 Companies**")
+        top_co = (
+            filtered.groupby('company')
+            .agg(launches=('success','count'), successes=('success','sum'))
+            .assign(rate=lambda x: (x['successes']/x['launches']*100).round(1))
+            .sort_values('launches', ascending=False)
+            .head(8)
+            .reset_index()[['company','launches','rate']]
+        )
+        top_co.columns = ['Company','Launches','Success %']
+        st.dataframe(top_co, use_container_width=True, hide_index=True, height=230)
 
 # ============================================================
 # TAB 2 — CHARTS & ANALYSIS
@@ -610,3 +599,4 @@ with tab4:
     The shaded region represents a ±3% uncertainty band around the projection.
     </div>
     """, unsafe_allow_html=True)
+
