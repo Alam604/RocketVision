@@ -31,11 +31,20 @@ st.set_page_config(
 st.markdown("""
 <style>
     .main { background-color: #0e1117; }
-    .block-container { padding-top: 0.5rem !important; padding-left: 1rem !important; padding-right: 1rem !important; max-width: 100% !important; }
-    header[data-testid="stHeader"] { height: 0rem; }
+    .block-container {
+        padding-top: 2rem !important;
+        padding-left: 3rem !important;
+        padding-right: 3rem !important;
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+    }
     #MainMenu { visibility: hidden; }
     footer { visibility: hidden; }
-    [data-testid="collapsedControl"] { display: block; }
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        margin-bottom: 1rem;
+        flex-wrap: nowrap;
+    }
     .metric-card {
         background: linear-gradient(135deg, #1e2130, #252a3d);
         border: 1px solid #2e3554;
@@ -170,7 +179,7 @@ tab1, tab2, tab3, tab4 = st.tabs([
 # TAB 1 — DASHBOARD
 # ============================================================
 with tab1:
-    st.markdown("## 🚀 RocketVision — Space Mission Launch Success Predictor")
+    st.markdown("### 🚀 RocketVision — Space Mission Launch Success Predictor")
 
     total           = len(filtered)
     success         = int(filtered['success'].sum())
