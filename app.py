@@ -418,7 +418,7 @@ with tab3:
     plt.tight_layout(); st.pyplot(fig); plt.close()
 
     # Probability distribution chart
-    st.markdown('<div class="section-header">Predicted Probability Distribution (Logistic Regression)</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">Predicted Probability Distribution</div>', unsafe_allow_html=True)
     y_pred_prob = model.predict_proba(X_test)[:, 1]
     fig, ax = plt.subplots(figsize=(12, 4), facecolor='#0e1117')
     ax.set_facecolor('#1e2130')
@@ -612,4 +612,3 @@ with tab4:
     The shaded region represents a ±3% uncertainty band around the projection.
     </div>
     """, unsafe_allow_html=True)
-
